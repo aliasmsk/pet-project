@@ -1,0 +1,27 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_requests:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate and Build Docker Compose
+        run: |
+          docker compose config
+          docker compose build
+
+      - name: Test running application
+        run: |
+          docker compose up -d
+          sleep 5
+          curl -f http://localhost/ || exit 1
+          docker compose down
