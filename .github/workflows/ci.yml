@@ -24,3 +24,14 @@ jobs:
           context: .
           push: true
           tags: aliasmsk/devops-pet-project:latest
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/user/pet
+            docker compose pull
+            docker compose up -d
