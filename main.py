@@ -10,6 +10,7 @@ DB_NAME = os.getenv("DB_NAME", "postgres")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
 
+print "hello"
 
 @app.get("/")
 def read_root():
@@ -19,7 +20,7 @@ def read_root():
 
 @app.get("/db-check")
 def check_db():
-    """Эндипоинт, который пробует подключиться к PostgreSQL"""
+    """Эндickпоинт, который пробует подключиться к PostgreSQL"""
     try:
         conn = psycopg2.connect(
             host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD

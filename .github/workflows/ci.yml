@@ -1,11 +1,11 @@
-name: CI/CD Pipeline
+name: CI/CD Production Pipeline
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build-and-push:
+  build-push-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,15 +23,30 @@ jobs:
         with:
           context: .
           push: true
-          tags: aliasmsk/devops-pet-project:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-pet-project:latest
 
-      - name: Deploy to VPS via SSH
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-secret: ''
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+
+      - name: Copy config files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.yml,nginx.conf"
+          target: "~/app"
+
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/user/pet
+            cd ~/app
             docker compose pull
             docker compose up -d
