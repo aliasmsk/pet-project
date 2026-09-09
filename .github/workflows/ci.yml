@@ -25,6 +25,12 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/devops-pet-project:latest
 
+      - name: Run my custom check
+        run: |
+          echo "Запускаю проверку синтаксиса..."
+          python -m py_compile main.py
+          echo "Проверка пройдена!"
+
       - name: Connect to Tailscale
         uses: tailscale/github-action@v2
         with:
